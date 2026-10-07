@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TIME MASTER: MISI BACAAN MUKA JAM - SK SINAR BAHAGIA</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Outfit:wght@400;600;800&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Fredoka', 'sans-serif'],
+                        outfit: ['Outfit', 'sans-serif'],
+                        serif: ['Cinzel', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            purple: '#6D28D9',
+                            darkPurple: '#4C1D95',
+                            accent: '#F59E0B',
+                            lightYellow: '#FEF3C7',
+                            pink: '#EC4899',
+                            cyan: '#06B6D4',
+                            emerald: '#10B981',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s infinite',
+                        'bounce-gentle': 'bounceGentle 1.5s infinite',
+                        'wiggle': 'wiggle 0.3s ease-in-out infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        bounceGentle: {
+                            '0%, 100%': { transform: 'translateY(-4%)' },
+                            '50%': { transform: 'translateY(0)' },
+                        },
+                        wiggle: {
+                            '0%, 100%': { transform: 'rotate(-3deg)' },
+                            '50%': { transform: 'rotate(3deg)' },
+                        },
+                        glow: {
+                            'from': { boxShadow: '0 0 10px #F59E0B, 0 0 20px #F59E0B' },
+                            'to': { boxShadow: '0 0 20px #FBBF24, 0 0 30px #FBBF24' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Fredoka', sans-serif;
+            background: linear-gradient(135deg, #2e1065 0%, #3b0764 50%, #581c87 100%);
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+            overflow-x: hidden;
+        }
+
+        .arcade-card {
+            background: rgba(255, 255, 255, 0.96);
+            border: 4px solid #F59E0B;
+            box-shadow: 0 10px 0 0 #B45309, 0 15px 25px rgba(0,0,0,0.4);
+            border-radius: 2rem;
+        }
+
+        .arcade-btn {
+            transition: all 0.1s ease;
+            box-shadow: 0 6px 0 0 #B45309;
+        }
+        .arcade-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 0 #B45309;
+        }
+
+        .option-btn {
+            background: linear-gradient(180deg, #FFFFFF 0%, #F3F4F6 100%);
+            border: 3px solid #8B5CF6;
+            box-shadow: 0 6px 0 0 #6D28D9, 0 8px 15px rgba(0,0,0,0.15);
+            transition: all 0.15s ease;
+        }
+        .option-btn:hover {
+            border-color: #F59E0B;
+            background: #FEF3C7;
+        }
+        .option-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 0 #6D28D9;
+        }
+
+        .shake {
+            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-2px, 0, 0); }
+            20%, 80% { transform: translate3d(4px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+            40%, 60% { transform: translate3d(6px, 0, 0); }
+        }
+
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* Printable Certificate Styles */
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 0;
+            }
+            body {
+                background: white !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            /* Hide all main game UI elements */
+            header, footer, main > section, #confetti-canvas, .no-print {
+                display: none !important;
+            }
+            /* Show only the certificate modal content */
+            #certificate-modal {
+                position: fixed !important;
+                inset: 0 !important;
+                background: white !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                z-index: 9999 !important;
+                width: 100vw !important;
+                height: 100vh !important;
+            }
+            #certificate-modal > div {
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                max-height: 100% !important;
+            }
+            #printable-certificate {
+                border: 10px solid #D97706 !important;
+                box-shadow: none !important;
+                width: 95vw !important;
+                height: 90vh !important;
+                margin: auto !important;
+                background-color: #FFFBEB !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col justify-between items-center p-3 md:p-6">
+
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- Top School Banner Header -->
+    <header class="w-full max-w-2xl bg-amber-400 text-purple-950 font-black text-center py-2 px-4 rounded-2xl border-2 border-yellow-200 shadow-lg mb-3 flex items-center justify-center gap-2">
+        <span class="text-xl md:text-2xl">🏫</span>
+        <h1 class="text-sm md:text-lg tracking-wide uppercase">SEKOLAH KEBANGSAAN SINAR BAHAGIA</h1>
+    </header>
+
+    <!-- Top Navigation Bar / HUD -->
+    <header id="hud-bar" class="w-full max-w-2xl bg-purple-900/80 backdrop-blur-md border-2 border-amber-400 rounded-2xl p-3 mb-4 shadow-xl flex justify-between items-center text-white hidden">
+        <div class="flex items-center gap-2">
+            <span class="text-xs md:text-sm font-bold text-amber-300">MISI:</span>
+            <span id="mission-tracker" class="bg-purple-950 px-3 py-1 rounded-full text-amber-400 font-extrabold border border-amber-400/40 text-sm md:text-base">1/8</span>
+        </div>
+
+        <div class="flex items-center gap-1 md:gap-2">
+            <span class="text-xs md:text-sm font-bold text-pink-300">NYAWA:</span>
+            <div id="lives-container" class="flex gap-1 text-lg md:text-xl">
+                ❤️ ❤️ ❤️
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <span class="text-xs md:text-sm font-bold text-yellow-300">MARKAH:</span>
+            <div class="bg-amber-500/20 px-3 py-1 rounded-full border border-amber-400 text-yellow-300 font-black text-sm md:text-base flex items-center gap-1">
+                ⭐ <span id="score-display">0</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="w-full max-w-2xl flex-1 flex flex-col items-center justify-center relative">
+
+        <!-- ==================== SKRIN UTAMA (START SCREEN) ==================== -->
+        <section id="start-screen" class="w-full arcade-card p-6 md:p-8 text-center flex flex-col items-center gap-5 my-auto">
+            <div class="relative">
+                <div class="inline-block bg-amber-400 text-purple-950 px-4 py-1 rounded-full font-black text-xs md:text-sm uppercase tracking-widest shadow-md mb-2">
+                    ⚡ Game Matematik Tahun 2 ⚡
+                </div>
+                <h1 class="text-4xl md:text-6xl font-black text-purple-900 tracking-tight leading-none drop-shadow-md">
+                    ⏰ TIME MASTER
+                </h1>
+                <h2 class="text-lg md:text-2xl font-bold text-amber-600 mt-2">
+                    "MISI BACAAN MUKA JAM"
+                </h2>
+            </div>
+
+            <!-- Hero Avatar & Graphic -->
+            <div class="relative w-32 h-32 md:w-40 md:h-40 flex items-center justify-center bg-gradient-to-tr from-amber-300 to-yellow-100 rounded-full border-4 border-amber-500 shadow-inner">
+                <svg class="w-24 h-24 md:w-32 md:h-32 text-purple-800 animate-pulse-slow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" fill="#FFF" stroke="#6D28D9" stroke-width="2"/>
+                    <polyline points="12 6 12 12 16 14" stroke="#EC4899" stroke-width="2.5"/>
+                    <path d="M12 2v2M12 20v2M2 12h2M20 12h2" stroke="#6D28D9" stroke-width="2"/>
+                </svg>
+                <span class="absolute -bottom-2 bg-purple-700 text-white text-xs px-3 py-1 rounded-full font-bold shadow-md">🦸 TIME HERO</span>
+            </div>
+
+            <p class="text-slate-700 font-semibold text-base md:text-lg max-w-md">
+                "Baca jam. Cari jawapan. Kumpul mata dan jadi <span class="text-purple-800 font-extrabold">TIME MASTER!</span>"
+            </p>
+
+            <button onclick="startGame()" class="arcade-btn w-full max-w-xs bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-purple-950 font-black text-2xl py-4 px-8 rounded-2xl border-2 border-yellow-200 tracking-wide transform hover:scale-105 active:scale-95 transition-all">
+                ▶ MULA MISI
+            </button>
+
+            <!-- Stats Bar -->
+            <div class="grid grid-cols-3 gap-2 md:gap-4 w-full pt-4 border-t-2 border-amber-200 text-xs md:text-sm font-bold text-slate-600">
+                <div class="bg-purple-50 p-2 rounded-xl border border-purple-200 flex flex-col items-center">
+                    <span class="text-xl">⭐</span>
+                    <span>80 Mata Max</span>
+                </div>
+                <div class="bg-purple-50 p-2 rounded-xl border border-purple-200 flex flex-col items-center">
+                    <span class="text-xl">⏰</span>
+                    <span>8 Misi Jam</span>
+                </div>
+                <div class="bg-purple-50 p-2 rounded-xl border border-purple-200 flex flex-col items-center">
+                    <span class="text-xl">🏆</span>
+                    <span>Sijil Digital</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== SKRIN MISI / GAMEPLAY ==================== -->
+        <section id="game-screen" class="w-full arcade-card p-4 md:p-6 flex flex-col items-center gap-4 hidden">
+
+            <!-- Mission Header Badge -->
+            <div class="w-full flex justify-between items-center">
+                <div id="boss-badge" class="hidden bg-gradient-to-r from-red-500 to-pink-600 text-white font-black px-4 py-1 rounded-full text-xs md:text-sm shadow-md animate-bounce">
+                    👑 BOSS LEVEL
+                </div>
+                <h3 id="mission-title" class="text-lg md:text-2xl font-black text-purple-900 tracking-wide">
+                    MISI 1 — KUNCI MASA
+                </h3>
+                <div id="combo-badge" class="opacity-0 transition-opacity duration-300 bg-amber-400 text-purple-950 font-black text-xs px-3 py-1 rounded-full border border-amber-600">
+                    🔥 COMBO x<span id="combo-count">0</span>
+                </div>
+            </div>
+
+            <!-- Dynamic SVG Analog Clock Rendering -->
+            <div class="relative bg-gradient-to-b from-purple-100 to-indigo-50 p-3 md:p-5 rounded-3xl border-4 border-purple-300 shadow-inner flex items-center justify-center my-1">
+                <svg id="analog-clock" class="w-56 h-56 md:w-72 md:h-72 drop-shadow-xl" viewBox="0 0 300 300">
+                    <!-- Outer Bezel -->
+                    <circle cx="150" cy="150" r="140" fill="#4C1D95" stroke="#F59E0B" stroke-width="8" />
+                    <!-- Inner Face -->
+                    <circle cx="150" cy="150" r="128" fill="#FFFFFF" stroke="#DDD6FE" stroke-width="4" />
+                    
+                    <!-- Minute Ticks & Numbers (Rendered dynamically via JS) -->
+                    <g id="clock-ticks"></g>
+                    <g id="clock-numbers"></g>
+
+                    <!-- Hour Hand -->
+                    <line id="hour-hand" x1="150" y1="150" x2="150" y2="85" stroke="#9333EA" stroke-width="9" stroke-linecap="round" />
+                    <!-- Minute Hand -->
+                    <line id="minute-hand" x1="150" y1="150" x2="150" y2="50" stroke="#EC4899" stroke-width="6" stroke-linecap="round" />
+                    
+                    <!-- Center Pin -->
+                    <circle cx="150" cy="150" r="9" fill="#F59E0B" stroke="#4C1D95" stroke-width="3" />
+                </svg>
+            </div>
+
+            <!-- Question Box -->
+            <div class="w-full text-center bg-purple-900 text-white p-3 md:p-4 rounded-2xl border-2 border-amber-400 shadow">
+                <p id="question-text" class="text-base md:text-xl font-extrabold tracking-wide">
+                    Apakah masa yang ditunjukkan?
+                </p>
+            </div>
+
+            <!-- Multiple Choice Options -->
+            <div id="options-container" class="grid grid-cols-1 md:grid-cols-3 gap-3 w-full my-2">
+                <!-- Buttons dynamically generated -->
+            </div>
+        </section>
+
+        <!-- ==================== OVERLAY / MODAL PENJELASAN ==================== -->
+        <div id="explanation-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+            <div class="arcade-card max-w-md w-full p-6 text-center flex flex-col items-center gap-4 animate-bounce-gentle">
+                <div class="text-5xl">🎉</div>
+                <h3 class="text-2xl md:text-3xl font-black text-purple-900">HEBAT! KAMU BERJAYA!</h3>
+                <div class="bg-amber-100 border-2 border-amber-400 text-amber-900 p-4 rounded-2xl text-base md:text-lg font-bold">
+                    💡 <span id="explanation-text">Penjelasan di sini...</span>
+                </div>
+                <div class="text-amber-500 font-extrabold text-lg">+10 ⭐ Diterima!</div>
+                <button onclick="nextMission()" class="arcade-btn w-full bg-emerald-500 hover:bg-emerald-400 text-white font-black text-xl py-3 rounded-xl border-2 border-emerald-300">
+                    SETERUSNYA ▶
+                </button>
+            </div>
+        </div>
+
+        <!-- ==================== SKRIN GAME OVER ==================== -->
+        <section id="gameover-screen" class="w-full arcade-card p-6 md:p-8 text-center flex flex-col items-center gap-6 my-auto hidden">
+            <div class="text-6xl animate-bounce">⏰</div>
+            <h2 class="text-4xl md:text-5xl font-black text-red-600 tracking-tight">
+                MASA TAMAT!
+            </h2>
+            <p class="text-slate-700 font-bold text-lg md:text-xl">
+                Jangan risau! Praktik lagi untuk menjadi Time Master sebenar.
+            </p>
+            <div class="bg-red-50 border-2 border-red-200 p-4 rounded-2xl w-full text-center">
+                <p class="text-slate-600 font-semibold">Markah Terkumpul:</p>
+                <p class="text-3xl font-black text-purple-900"><span id="final-score-fail">0</span> / 80 ⭐</p>
+            </div>
+            <button onclick="restartGame()" class="arcade-btn w-full max-w-xs bg-amber-400 hover:bg-amber-300 text-purple-950 font-black text-xl py-4 rounded-2xl border-2 border-amber-200">
+                🔄 MAIN SEMULA
+            </button>
+        </section>
+
+        <!-- ==================== SKRIN KEMENANGAN (VICTORY) ==================== -->
+        <section id="victory-screen" class="w-full arcade-card p-6 md:p-8 text-center flex flex-col items-center gap-5 my-auto hidden">
+            <div class="text-5xl animate-bounce">🎉 🏆 🎉</div>
+            
+            <h2 class="text-3xl md:text-5xl font-black text-purple-900 tracking-tight">
+                TAHNIAH!
+            </h2>
+
+            <div class="bg-gradient-to-r from-amber-300 via-yellow-200 to-amber-300 border-4 border-amber-500 p-4 rounded-2xl w-full shadow-md">
+                <p class="text-xs font-bold text-purple-900 uppercase tracking-widest">Lencana Pencapaian Anda:</p>
+                <div id="badge-icon" class="text-5xl my-1">🥇</div>
+                <h3 id="badge-title" class="text-2xl md:text-3xl font-black text-purple-950">TIME MASTER</h3>
+                <p id="badge-desc" class="text-sm font-semibold text-amber-900 mt-1">"Kamu telah berjaya menguasai bacaan muka jam!"</p>
+            </div>
+
+            <!-- Student Name Input for Certificate -->
+            <div class="w-full bg-purple-50 p-4 rounded-2xl border-2 border-purple-200 text-left">
+                <label for="student-name" class="block text-xs font-bold text-purple-900 mb-1 uppercase">Masukkan Nama Murid Untuk Sijil:</label>
+                <input type="text" id="student-name" onkeyup="syncNameOnInput()" placeholder="Contoh: AHMAD ZAKWAN BIN ALI" class="w-full p-3 rounded-xl border-2 border-purple-300 font-bold text-purple-950 focus:outline-none focus:border-amber-500 text-sm md:text-base">
+            </div>
+
+            <!-- Final Stats Grid -->
+            <div class="grid grid-cols-3 gap-2 w-full text-sm font-bold">
+                <div class="bg-purple-100 p-2 rounded-xl border border-purple-300">
+                    <span class="block text-slate-500 text-xs">MARKAH</span>
+                    <span id="victory-score" class="text-lg font-black text-purple-900">80 / 80</span>
+                </div>
+                <div class="bg-purple-100 p-2 rounded-xl border border-purple-300">
+                    <span class="block text-slate-500 text-xs">MAX COMBO</span>
+                    <span id="victory-combo" class="text-lg font-black text-purple-900">🔥 8</span>
+                </div>
+                <div class="bg-purple-100 p-2 rounded-xl border border-purple-300">
+                    <span class="block text-slate-500 text-xs">MISI</span>
+                    <span class="text-lg font-black text-purple-900">8 / 8</span>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col md:flex-row gap-3 w-full pt-2">
+                <button onclick="openCertificateModal()" class="arcade-btn flex-1 bg-emerald-500 hover:bg-emerald-400 text-white font-black text-lg py-3 rounded-2xl border-2 border-emerald-300">
+                    📜 LIHAT & CETAK SIJIL
+                </button>
+                <button onclick="restartGame()" class="arcade-btn flex-1 bg-amber-400 hover:bg-amber-300 text-purple-950 font-black text-lg py-3 rounded-2xl border-2 border-amber-200">
+                    🔄 MAIN SEMULA
+                </button>
+            </div>
+            <button onclick="showStartScreen()" class="w-full text-purple-800 font-bold text-sm underline hover:text-purple-950 mt-1">
+                🏠 Kembali ke Menu Utama
+            </button>
+        </section>
+
+        <!-- ==================== MODAL SIJIL PENCAPAIAN ==================== -->
+        <div id="certificate-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-3 md:p-6 hidden">
+            <div class="bg-white rounded-3xl p-2 md:p-4 max-w-2xl w-full max-h-[95vh] overflow-y-auto flex flex-col items-center">
+                
+                <!-- Printable Certificate Container -->
+                <div id="printable-certificate" class="w-full bg-amber-50 border-8 border-amber-500 rounded-2xl p-6 md:p-8 text-center relative flex flex-col justify-between items-center text-purple-950 shadow-2xl my-2">
+                    <!-- Corner Decorative Accents -->
+                    <div class="absolute top-2 left-2 text-2xl">⭐</div>
+                    <div class="absolute top-2 right-2 text-2xl">⭐</div>
+                    <div class="absolute bottom-2 left-2 text-2xl">⏰</div>
+                    <div class="absolute bottom-2 right-2 text-2xl">🏆</div>
+
+                    <!-- Certificate Header -->
+                    <div>
+                        <h4 class="text-xs md:text-sm font-bold tracking-widest text-amber-800 uppercase">SEKOLAH KEBANGSAAN SINAR BAHAGIA</h4>
+                        <h2 class="text-2xl md:text-4xl font-serif font-black text-purple-900 mt-1">SIJIL PENCAPAIAN</h2>
+                        <p class="text-xs md:text-sm text-purple-700 font-semibold italic mt-1">Permainan Digital Matematik Tahun 2: TIME MASTER</p>
+                    </div>
+
+                    <div class="my-4 w-full border-y-2 border-amber-300 py-4 flex flex-col items-center gap-2">
+                        <p class="text-xs text-slate-600 uppercase font-bold tracking-wider">Dengan ini diperakukan bahawa</p>
+                        <h3 id="cert-student-name" class="text-2xl md:text-3xl font-black text-purple-950 underline decoration-amber-500 decoration-2 uppercase tracking-wide">
+                            [ NAMA MURID ]
+                        </h3>
+                        <p class="text-xs md:text-sm text-slate-700 font-medium max-w-md mt-1">
+                            telah berjaya menyelesaikan kesemua 8 Misi Muka Jam dan dianugerahkan gelaran:
+                        </p>
+                        <div class="inline-block bg-purple-900 text-amber-300 font-black text-lg md:text-xl px-6 py-2 rounded-full border-2 border-amber-400 mt-2 shadow">
+                            <span id="cert-badge-title">🥇 TIME MASTER</span>
+                        </div>
+                    </div>
+
+                    <!-- Score and Details -->
+                    <div class="flex justify-around items-center w-full text-xs md:text-sm font-bold text-purple-900 my-2">
+                        <div>
+                            <span class="block text-slate-500 text-[10px]">MARKAH TERKUMPUL</span>
+                            <span id="cert-score" class="text-base font-black text-amber-600">80 / 80 ⭐</span>
+                        </div>
+                        <div>
+                            <span class="block text-slate-500 text-[10px]">TARIKH</span>
+                            <span id="cert-date" class="text-base font-black text-purple-900">07/10/2026</span>
+                        </div>
+                    </div>
+
+                    <!-- Signatures -->
+                    <div class="w-full flex justify-between items-end mt-6 pt-4 border-t border-amber-200 text-left text-xs">
+                        <div class="text-center">
+                            <div class="font-serif font-bold text-slate-800 italic text-sm">Cikgu Norziah</div>
+                            <div class="border-t border-slate-400 pt-1 font-bold text-slate-700">Disediakan Oleh:</div>
+                            <div class="text-[10px] text-slate-500">Cikgu Norziah binti Khamis</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="font-bold text-purple-900 text-sm">SK SINAR BAHAGIA</div>
+                            <div class="border-t border-slate-400 pt-1 font-bold text-slate-700">PPD Kulai</div>
+                            <div class="text-[10px] text-slate-500">Unit Matematik Sekolah Rendah</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Non-printable Controls -->
+                <div class="flex gap-3 w-full mt-3 no-print">
+                    <button onclick="printCertificate()" class="arcade-btn flex-1 bg-amber-500 hover:bg-amber-400 text-purple-950 font-black text-base md:text-lg py-3 rounded-2xl border-2 border-amber-200 flex items-center justify-center gap-2">
+                        <span>🖨️</span> CETAK / SIMPAN PDF
+                    </button>
+                    <button onclick="closeCertificateModal()" class="arcade-btn flex-1 bg-purple-700 hover:bg-purple-600 text-white font-black text-base md:text-lg py-3 rounded-2xl border-2 border-purple-400">
+                        ❌ TUTUP
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer Tagline and Credits -->
+    <footer class="w-full text-center py-2 text-xs md:text-sm font-bold text-amber-200/90 flex flex-col gap-1">
+        <div>⏰ BACA JAM. KUMPUL MATA. JADI TIME MASTER!</div>
+        <div class="text-[11px] text-purple-200 font-normal">Disediakan oleh: <span class="font-semibold text-amber-300">Cikgu Norziah binti Khamis</span> | SK Sinar Bahagia</div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Sound Effects (Web Audio API Synthesizer)
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            try {
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                const now = audioCtx.currentTime;
+
+                if (type === 'correct') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, now);
+                    osc.frequency.setValueAtTime(659.25, now + 0.1);
+                    osc.frequency.setValueAtTime(783.99, now + 0.2);
+                    osc.frequency.setValueAtTime(1046.50, now + 0.3);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+                    osc.start(now);
+                    osc.stop(now + 0.5);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, now);
+                    osc.frequency.setValueAtTime(164.81, now + 0.15);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                    osc.start(now);
+                    osc.stop(now + 0.4);
+                } else if (type === 'combo') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(587.33, now);
+                    osc.frequency.setValueAtTime(880, now + 0.1);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                    osc.start(now);
+                    osc.stop(now + 0.4);
+                }
+            } catch(e) {
+                console.log("Audio play error:", e);
+            }
+        }
+
+        // Full 8 Missions Data
+        const missions = [
+            {
+                id: 1,
+                title: "MISI 1 — KUNCI MASA",
+                isBoss: false,
+                hour: 4,
+                minute: 0,
+                question: "Apakah masa yang ditunjukkan?",
+                options: ["4:00", "12:04", "4:12"],
+                answer: "4:00",
+                explanation: "Jarum minit berada pada 12. Jarum jam berada tepat pada 4. Jadi, masa ialah 4:00."
+            },
+            {
+                id: 2,
+                title: "MISI 2 — HARTA KARUN MASA",
+                isBoss: false,
+                hour: 2,
+                minute: 30,
+                question: "Di manakah jarum minit?",
+                options: ["3", "6", "9"],
+                answer: "6",
+                explanation: "Untuk 30 minit (setengah jam), jarum minit mesti menunjuk tepat pada nombor 6."
+            },
+            {
+                id: 3,
+                title: "MISI 3 — TANGKAP MASA",
+                isBoss: false,
+                hour: 7,
+                minute: 15,
+                question: "Apakah masa yang ditunjukkan?",
+                options: ["7:03", "3:07", "7:15"],
+                answer: "7:15",
+                explanation: "Jarum minit berada pada 3. Setiap nombor mewakili 5 minit. 3 × 5 = 15 minit (7:15)."
+            },
+            {
+                id: 4,
+                title: "MISI 4 — MISI MINIT",
+                isBoss: false,
+                hour: 10,
+                minute: 30,
+                question: "Masa ini menunjukkan pukul berapa?",
+                options: ["10:30", "11:30", "10:06"],
+                answer: "10:30",
+                explanation: "Jarum jam berada di tengah 10 dan 11, manakala jarum minit menunjuk pada 6 (30 minit). Jadi masa ialah 10:30."
+            },
+            {
+                id: 5,
+                title: "MISI 5 — ROKET MASA",
+                isBoss: false,
+                hour: 9,
+                minute: 45,
+                question: "Berapa minit selepas pukul 9:00?",
+                options: ["15 minit", "30 minit", "45 minit"],
+                answer: "45 minit",
+                explanation: "Jarum minit berada pada 9. 9 × 5 = 45 minit selepas pukul 9:00."
+            },
+            {
+                id: 6,
+                title: "MISI 6 — BINTANG MASA",
+                isBoss: false,
+                hour: 1,
+                minute: 15,
+                question: "Berapa minitkah yang ditunjukkan oleh jarum minit (pada angka 3)?",
+                options: ["3 minit", "15 minit", "30 minit"],
+                answer: "15 minit",
+                explanation: "Angka 3 pada muka jam mewakili 15 minit kerana 3 x 5 = 15 minit."
+            },
+            {
+                id: 7,
+                title: "MISI 7 — CABARAN MUKA JAM",
+                isBoss: false,
+                hour: 6,
+                minute: 45,
+                question: "Apakah bacaan masa pada muka jam ini?",
+                options: ["6:45", "7:45", "9:30"],
+                answer: "6:45",
+                explanation: "Jarum minit berada pada 9 (45 minit) dan jarum jam menghampiri angka 7. Masa ini ialah 6:45."
+            },
+            {
+                id: 8,
+                title: "MISI 8 — BOSS LEVEL",
+                isBoss: true,
+                hour: 5,
+                minute: 30,
+                question: "Apakah bacaan masa yang betul?",
+                options: ["Pukul lima tiga puluh", "Pukul lima lima belas", "Pukul enam tiga puluh"],
+                answer: "Pukul lima tiga puluh",
+                explanation: "Jarum jam berada di antara 5 dan 6, dan jarum minit pada 6. Ia dibaca sebagai Pukul lima tiga puluh."
+            }
+        ];
+
+        // State Variables
+        let currentMissionIndex = 0;
+        let score = 0;
+        let lives = 3;
+        let combo = 0;
+        let maxCombo = 0;
+
+        function initClockDial() {
+            const ticksGroup = document.getElementById('clock-ticks');
+            const numbersGroup = document.getElementById('clock-numbers');
+            ticksGroup.innerHTML = '';
+            numbersGroup.innerHTML = '';
+
+            const cx = 150, cy = 150, r = 110;
+
+            for (let i = 0; i < 60; i++) {
+                const angle = (i * 6) * (Math.PI / 180);
+                const isHour = i % 5 === 0;
+                const tickLen = isHour ? 12 : 5;
+                const strokeW = isHour ? 3 : 1.5;
+                const color = isHour ? "#6D28D9" : "#9CA3AF";
+
+                const x1 = cx + (r - tickLen) * Math.sin(angle);
+                const y1 = cy - (r - tickLen) * Math.cos(angle);
+                const x2 = cx + r * Math.sin(angle);
+                const y2 = cy - r * Math.cos(angle);
+
+                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                line.setAttribute("x1", x1);
+                line.setAttribute("y1", y1);
+                line.setAttribute("x2", x2);
+                line.setAttribute("y2", y2);
+                line.setAttribute("stroke", color);
+                line.setAttribute("stroke-width", strokeW);
+                ticksGroup.appendChild(line);
+            }
+
+            for (let num = 1; num <= 12; num++) {
+                const angle = (num * 30) * (Math.PI / 180);
+                const numR = r - 24;
+                const x = cx + numR * Math.sin(angle);
+                const y = cy - numR * Math.cos(angle);
+
+                const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                text.setAttribute("x", x);
+                text.setAttribute("y", y + 6);
+                text.setAttribute("text-anchor", "middle");
+                text.setAttribute("font-size", "20");
+                text.setAttribute("font-weight", "800");
+                text.setAttribute("fill", "#3B0764");
+                text.textContent = num;
+                numbersGroup.appendChild(text);
+            }
+        }
+
+        function setClockTime(hours, minutes) {
+            const minuteAngle = minutes * 6;
+            const hourAngle = (hours % 12) * 30 + (minutes * 0.5);
+
+            const hourHand = document.getElementById('hour-hand');
+            const minuteHand = document.getElementById('minute-hand');
+
+            hourHand.setAttribute('transform', `rotate(${hourAngle}, 150, 150)`);
+            minuteHand.setAttribute('transform', `rotate(${minuteAngle}, 150, 150)`);
+        }
+
+        function startGame() {
+            currentMissionIndex = 0;
+            score = 0;
+            lives = 3;
+            combo = 0;
+            maxCombo = 0;
+
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('gameover-screen').classList.add('hidden');
+            document.getElementById('victory-screen').classList.add('hidden');
+            document.getElementById('hud-bar').classList.remove('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+
+            initClockDial();
+            updateHUD();
+            loadMission();
+        }
+
+        function updateHUD() {
+            document.getElementById('mission-tracker').innerText = `${currentMissionIndex + 1}/8`;
+            document.getElementById('score-display').innerText = score;
+
+            let heartsHTML = '';
+            for (let i = 0; i < 3; i++) {
+                if (i < lives) {
+                    heartsHTML += '❤️ ';
+                } else {
+                    heartsHTML += '🖤 ';
+                }
+            }
+            document.getElementById('lives-container').innerHTML = heartsHTML;
+
+            const comboBadge = document.getElementById('combo-badge');
+            if (combo >= 2) {
+                comboBadge.classList.remove('opacity-0');
+                document.getElementById('combo-count').innerText = combo;
+            } else {
+                comboBadge.classList.add('opacity-0');
+            }
+        }
+
+        function loadMission() {
+            const currentMission = missions[currentMissionIndex];
+
+            const bossBadge = document.getElementById('boss-badge');
+            if (currentMission.isBoss) {
+                bossBadge.classList.remove('hidden');
+            } else {
+                bossBadge.classList.add('hidden');
+            }
+
+            document.getElementById('mission-title').innerText = currentMission.title;
+            document.getElementById('question-text').innerText = currentMission.question;
+
+            setClockTime(currentMission.hour, currentMission.minute);
+
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            currentMission.options.forEach((opt) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn font-extrabold text-lg md:text-xl py-3 px-4 rounded-2xl text-purple-950 flex justify-center items-center';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(opt, currentMission.answer);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selected, correct) {
+            if (selected === correct) {
+                playSound('correct');
+                score += 10;
+                combo++;
+                if (combo > maxCombo) maxCombo = combo;
+
+                if (combo >= 3) {
+                    playSound('combo');
+                    score += 5;
+                }
+
+                updateHUD();
+                showExplanationModal();
+            } else {
+                playSound('wrong');
+                combo = 0;
+                lives--;
+                updateHUD();
+
+                const gameScreen = document.getElementById('game-screen');
+                gameScreen.classList.add('shake');
+                setTimeout(() => gameScreen.classList.remove('shake'), 400);
+
+                if (lives <= 0) {
+                    setTimeout(showGameOver, 500);
+                }
+            }
+        }
+
+        function showExplanationModal() {
+            const currentMission = missions[currentMissionIndex];
+            document.getElementById('explanation-text').innerText = currentMission.explanation;
+            document.getElementById('explanation-modal').classList.remove('hidden');
+            triggerConfetti(0.3);
+        }
+
+        function nextMission() {
+            document.getElementById('explanation-modal').classList.add('hidden');
+            currentMissionIndex++;
+
+            if (currentMissionIndex < missions.length) {
+                updateHUD();
+                loadMission();
+            } else {
+                showVictoryScreen();
+            }
+        }
+
+        function showGameOver() {
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('hud-bar').classList.add('hidden');
+            document.getElementById('final-score-fail').innerText = score;
+            document.getElementById('gameover-screen').classList.remove('hidden');
+        }
+
+        function showVictoryScreen() {
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('hud-bar').classList.add('hidden');
+            document.getElementById('victory-screen').classList.remove('hidden');
+
+            document.getElementById('victory-score').innerText = `${score} / 80`;
+            document.getElementById('victory-combo').innerText = `🔥 ${maxCombo}`;
+
+            const badgeIcon = document.getElementById('badge-icon');
+            const badgeTitle = document.getElementById('badge-title');
+            const badgeDesc = document.getElementById('badge-desc');
+
+            if (score >= 65) {
+                badgeIcon.innerText = "🥇";
+                badgeTitle.innerText = "TIME MASTER";
+                badgeDesc.innerText = "Luar biasa! Kamu kini pakar hebat membaca muka jam!";
+            } else if (score >= 45) {
+                badgeIcon.innerText = "🥈";
+                badgeTitle.innerText = "TIME HERO";
+                badgeDesc.innerText = "Tahniah! Kemahiran membaca jam kamu sangat membanggakan!";
+            } else if (score >= 30) {
+                badgeIcon.innerText = "🥉";
+                badgeTitle.innerText = "TIME EXPLORER";
+                badgeDesc.innerText = "Syabas! Teruskan latihan untuk menjadi Time Master!";
+            } else {
+                badgeIcon.innerText = "🏅";
+                badgeTitle.innerText = "PESERTA TIME MASTER";
+                badgeDesc.innerText = "Teruskan berusaha dan cubalah lagi!";
+            }
+
+            triggerConfetti(1.0);
+        }
+
+        function syncNameOnInput() {
+            const inputName = document.getElementById('student-name').value.trim();
+            document.getElementById('cert-student-name').innerText = inputName !== "" ? inputName : "MURID SK SINAR BAHAGIA";
+        }
+
+        function updateCertificateDetails() {
+            syncNameOnInput();
+            document.getElementById('cert-score').innerText = `${score} / 80 ⭐`;
+
+            const today = new Date();
+            const dateStr = today.toLocaleDateString('ms-MY', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            document.getElementById('cert-date').innerText = dateStr;
+
+            const certBadgeTitle = document.getElementById('cert-badge-title');
+            if (score >= 65) {
+                certBadgeTitle.innerText = "🥇 TIME MASTER";
+            } else if (score >= 45) {
+                certBadgeTitle.innerText = "🥈 TIME HERO";
+            } else if (score >= 30) {
+                certBadgeTitle.innerText = "🥉 TIME EXPLORER";
+            } else {
+                certBadgeTitle.innerText = "🏅 PESERTA TIME MASTER";
+            }
+        }
+
+        function openCertificateModal() {
+            updateCertificateDetails();
+            document.getElementById('certificate-modal').classList.remove('hidden');
+        }
+
+        function closeCertificateModal() {
+            document.getElementById('certificate-modal').classList.add('hidden');
+        }
+
+        function printCertificate() {
+            updateCertificateDetails();
+            window.print();
+        }
+
+        function restartGame() {
+            startGame();
+        }
+
+        function showStartScreen() {
+            document.getElementById('hud-bar').classList.add('hidden');
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('gameover-screen').classList.add('hidden');
+            document.getElementById('victory-screen').classList.add('hidden');
+            document.getElementById('start-screen').classList.remove('hidden');
+        }
+
+        function triggerConfetti(intensity) {
+            const canvas = document.getElementById('confetti-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const particles = [];
+            const colors = ['#F59E0B', '#EC4899', '#8B5CF6', '#10B981', '#3B82F6'];
+            const count = Math.floor(80 * intensity);
+
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: canvas.width / 2,
+                    y: canvas.height / 2,
+                    vx: (Math.random() - 0.5) * 12,
+                    vy: (Math.random() - 0.7) * 12,
+                    size: Math.random() * 8 + 4,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    life: 100
+                });
+            }
+
+            let animationFrame;
+            function render() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let alive = false;
+
+                particles.forEach(p => {
+                    if (p.life > 0) {
+                        alive = true;
+                        p.x += p.vx;
+                        p.y += p.vy;
+                        p.vy += 0.3;
+                        p.life--;
+                        ctx.fillStyle = p.color;
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                });
+
+                if (alive) {
+                    animationFrame = requestAnimationFrame(render);
+                } else {
+                    cancelAnimationFrame(animationFrame);
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+
+            render();
+        }
+
+        window.onresize = () => {
+            const canvas = document.getElementById('confetti-canvas');
+            if (canvas) {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+        };
+    </script>
+</body>
+</html>
